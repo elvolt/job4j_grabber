@@ -46,4 +46,14 @@ public class Post {
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
+
+    @Override
+    public String toString() {
+        return "Post{"
+                + "header='" + header + '\''
+                + ", link='" + link + '\''
+                + ", description='" + description + '\''
+                + ", createdDate=" + createdDate
+                + '}';
+    }
 }
