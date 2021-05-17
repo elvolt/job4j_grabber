@@ -1,12 +1,14 @@
 package ru.job4j.html;
 
+import java.time.LocalDateTime;
+
 public class Post {
     private String header;
     private String link;
     private String description;
-    private String createdDate;
+    private LocalDateTime createdDate;
 
-    public Post(String header, String link, String description, String createdDate) {
+    public Post(String header, String link, String description, LocalDateTime createdDate) {
         this.header = header;
         this.link = link;
         this.description = description;
@@ -37,11 +39,11 @@ public class Post {
         this.description = description;
     }
 
-    public String getCreatedDate() {
+    public LocalDateTime getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(String createdDate) {
+    public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
 }
