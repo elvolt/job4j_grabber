@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SqlRuParse implements Parse {
-    private static final String DATETIME_REGEXP = "\\d{1,2} [а-я]{3} \\d{2}, \\d{2}:\\d{2}";
+    private static final Pattern DATETIME_REGEXP = Pattern.compile("\\d{1,2} [а-я]{3} \\d{2}, \\d{2}:\\d{2}");
 
     public List<Post> list(String url) {
         List<Post> posts = new ArrayList<>();
@@ -42,8 +42,7 @@ public class SqlRuParse implements Parse {
             Document doc = Jsoup.connect(url).get();
             String header = doc.selectFirst(".msgTable .messageHeader").ownText();
             String description = doc.select(".msgTable .msgBody").get(1).text();
-            Pattern pattern = Pattern.compile(DATETIME_REGEXP);
-            Matcher matcher = pattern.matcher(doc.selectFirst(".msgTable .msgFooter").ownText());
+            Matcher matcher = DATETIME_REGEXP.matcher(doc.selectFirst(".msgTable .msgFooter").ownText());
             LocalDateTime createdDate = null;
             if (matcher.find()) {
                 createdDate = new SqlRuDateTimeParser().parse(matcher.group());
