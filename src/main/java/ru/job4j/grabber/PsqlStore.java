@@ -1,5 +1,7 @@
 package ru.job4j.grabber;
 
+import org.postgresql.util.PSQLException;
+import ru.job4j.html.Post;
 import ru.job4j.quartz.Config;
 
 import java.sql.*;
@@ -27,12 +29,13 @@ public class PsqlStore implements Store, AutoCloseable {
 
     @Override
     public void save(Post post) {
-        String sql = "INSERT INTO post (name, text, link, created) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO post (name, text, link, created) "
+                + "VALUES (?, ?, ?, ?) ON CONFLICT (link) DO NOTHING";
         try (PreparedStatement stm = cnn.prepareStatement(sql)) {
-            stm.setString(1, post.getName());
-            stm.setString(2, post.getText());
+            stm.setString(1, post.getHeader());
+            stm.setString(2, post.getDescription());
             stm.setString(3, post.getLink());
-            stm.setObject(4, post.getCreated());
+            stm.setObject(4, post.getCreatedDate());
             stm.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -50,7 +53,7 @@ public class PsqlStore implements Store, AutoCloseable {
                 String text = resultSet.getString("text");
                 String link = resultSet.getString("link");
                 LocalDateTime created = resultSet.getObject("created", LocalDateTime.class);
-                posts.add(new Post(name, text, link, created));
+                posts.add(new Post(name, link, text, created));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -70,7 +73,7 @@ public class PsqlStore implements Store, AutoCloseable {
                 String text = resultSet.getString("text");
                 String link = resultSet.getString("link");
                 LocalDateTime created = resultSet.getObject("created", LocalDateTime.class);
-                result = new Post(name, text, link, created);
+                result = new Post(name, link, text, created);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -88,13 +91,15 @@ public class PsqlStore implements Store, AutoCloseable {
     public static void main(String[] args) {
         Properties config = Config.load("rabbit.properties");
         PsqlStore store = new PsqlStore(config);
-        Post post1 = new Post("post1", "Text in post 1", "link1", LocalDateTime.now());
-        Post post2 = new Post("post2", "Text in post 2", "link2", LocalDateTime.now());
-        Post post3 = new Post("post3", "Text in post 3", "link3", LocalDateTime.now());
+        Post post1 = new Post("post1", "link1", "Text in post 1", LocalDateTime.now());
+        Post post2 = new Post("post2", "link2", "Text in post 2", LocalDateTime.now());
+        Post post3 = new Post("post3", "link3", "Text in post 3", LocalDateTime.now());
+        Post post4 = new Post("post4", "link2", "Text in post 4", LocalDateTime.now());
         store.save(post1);
         store.save(post2);
         store.save(post3);
+        store.save(post4);
         store.getAll().forEach(System.out::println);
-        System.out.println(store.findById("2").toString());
+        System.out.println(store.findById("14").toString());
     }
 }
