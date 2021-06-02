@@ -63,11 +63,9 @@ public class Grabber implements Grab {
             Store store = (Store) map.get("store");
             Parse parse = (Parse) map.get("parse");
             List<Post> posts = new ArrayList<>();
-            posts.addAll(parse.list("https://www.sql.ru/forum/job-offers/1"));
-            posts.addAll(parse.list("https://www.sql.ru/forum/job-offers/2"));
-            posts.addAll(parse.list("https://www.sql.ru/forum/job-offers/3"));
-            posts.addAll(parse.list("https://www.sql.ru/forum/job-offers/4"));
-            posts.addAll(parse.list("https://www.sql.ru/forum/job-offers/5"));
+            for (int i = 1; i <= 5; i++) {
+                posts.addAll(parse.list("https://www.sql.ru/forum/job-offers/" + i));
+            }
             List<Post> javaPosts = posts.stream()
                     .filter(post -> {
                         String header = post.getHeader().toLowerCase();
